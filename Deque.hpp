@@ -20,8 +20,8 @@ typedef struct Deque_int {
 	int length;
 	int frontIdx;
 	int backIdx;
-	int arrSize;
-	char type_name[sizeof("Deque_int")] = "Deque_int";
+	int maxSize;
+	char type_name[strlen("Deque_int")+1];
 
 	bool (*compare)(const int &, const int &);
 	bool (*dtor)(Deque_int*);
@@ -46,7 +46,7 @@ typedef struct Deque_int {
 } Deque_int;
 
 std::size_t Deque_int_size(Deque_int *dq){
-	return (std::size_t) dq->length;
+	return dq->length;
 }
 
 bool Deque_int_empty(Deque_int *dq){
@@ -57,12 +57,59 @@ bool Deque_int_equal(Deque_int dq1, Deque_int dq2){
 	assert(false);
 }
 
+void Deque_int_push_back(Deque_int *dq, int val) {
+	if(dq->length == dq->maxSize) {
+		int oldSize = dq->maxSize;
+		dq->maxSize = 2*dq->maxSize;
+		int* newArr = (int*) malloc(sizeof(int) * dq->maxSize);
+		// Fill new array with values from old array, starting from frontIdx
+		for(int i = 0; i < dq->length; i++){
+			newArr[i] = dq->arr[(dq->frontIdx + i)%oldSize];
+		}
+		newArr[dq->length] = val;
+		// Free the old array so it can be replaced
+		if(dq->arr != NULL) free(dq->arr);
+		dq->arr = newArr;
+		// Set new indices
+		dq->frontIdx = 0;
+		dq->backIdx = dq->length;
+	} else {
+		dq->backIdx = (dq->backIdx + 1)%dq->maxSize;
+		dq->arr[dq->backIdx] = val;
+	}
+	dq->length++;
+}
+
+void Deque_int_push_front(Deque_int *dq, int val) {
+	if(dq->length == dq->maxSize) {
+		int oldSize = dq->maxSize;
+		dq->maxSize = 2*dq->maxSize;
+		int* newArr = (int*) malloc(sizeof(int) * dq->maxSize);
+		// Fill new array with values from old array, starting from frontIdx, leaving space for front insert
+		for(int i = 0; i < dq->length; i++){
+			newArr[i+1] = dq->arr[(dq->frontIdx + i)%oldSize];
+		}
+		newArr[0] = val;
+		// Free the old array so it can be replaced
+		if(dq->arr != NULL) free(dq->arr);
+		dq->arr = newArr;
+		// Set new indices
+		dq->frontIdx = 0;
+		dq->backIdx = dq->length;
+	} else {
+		dq->frontIdx = (dq->frontIdx-1 + dq->maxSize)%dq->maxSize;
+		dq->arr[dq->frontIdx] = val;
+	}
+	dq->length++;
+}
+
 void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
+	strcpy(dq->type_name, "Deque_int");
 	dq->length = 0;
-	dq->frontIdx = -1;
-	dq->backIdx = -1;
-	dq->arrSize = 20;
-	dq->arr = (int*) calloc(dq->arrSize, sizeof(int));
+	dq->frontIdx = 0;
+	dq->backIdx = 0;
+	dq->maxSize = 32;
+	dq->arr = (int*) malloc(sizeof(int) * dq->maxSize);
 	dq->compare = cmp;
 	dq->size = &Deque_int_size;
 	dq->empty = &Deque_int_empty;

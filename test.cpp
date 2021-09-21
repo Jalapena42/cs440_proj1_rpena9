@@ -109,7 +109,7 @@ MyClass_print(const MyClass *o) {
  * Test for int.
  */
 
-bool
+bool    
 int_less(const int &o1, const int &o2) {
     return o1 < o2;
 }
@@ -254,6 +254,7 @@ main() {
         printf("---- %s, %d\n", deq.type_name, int(sizeof(deq.type_name)));
         // std::cout << "---- " << deq.type_name << ", " << sizeof(deq.type_name) << std::endl;
         assert(sizeof deq.type_name == 10);
+
 
         deq.push_back(&deq, 1);
         deq.push_back(&deq, 2);
