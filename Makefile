@@ -6,4 +6,4 @@ test.o: Deque.hpp test.cpp
 	g++ -c ${CFLAGS} test.cpp
 
 test: test.o
-	g++ -o program1 test.o
+	g++ -Wl,--no-as-needed -ldl -o program1 test.o
