@@ -7,13 +7,28 @@
 #include <string.h>
 
 typedef struct Deque_int_Iterator {
+	int* arr;
+	int idx;
+
 	void (*inc)(Deque_int_Iterator*);
 	void (*dec)(Deque_int_Iterator*);
 	int (*deref)(Deque_int_Iterator*);
 } Deque_int_Iterator;
 
 bool Deque_int_Iterator_equal(Deque_int_Iterator it1, Deque_int_Iterator it2){
-	assert(false);
+	return (it1.idx == it2.idx);
+}
+
+void Deque_int_Iterator_increment(Deque_int_Iterator* it){
+	it->idx++;
+}
+
+void Deque_int_Iterator_decrement(Deque_int_Iterator* it){
+	it->idx--;
+}
+
+int Deque_int_Iterator_dereference(Deque_int_Iterator* it){
+	return it->arr[it->idx];
 }
 
 typedef struct Deque_int {
@@ -137,6 +152,26 @@ void Deque_int_pop_front(Deque_int *dq){
 	}
 }
 
+Deque_int_Iterator Deque_int_begin(Deque_int* dq){
+	Deque_int_Iterator it;
+	it.arr = dq->arr;
+	it.idx = dq->frontIdx;
+	it.inc = &Deque_int_Iterator_increment;
+	it.dec = &Deque_int_Iterator_decrement;
+	it.deref = &Deque_int_Iterator_dereference;
+	return it;
+}
+
+Deque_int_Iterator Deque_int_end(Deque_int* dq){
+	Deque_int_Iterator it;
+	it.arr = dq->arr;
+	it.idx = dq->backIdx;
+	it.inc = &Deque_int_Iterator_increment;
+	it.dec = &Deque_int_Iterator_decrement;
+	it.deref = &Deque_int_Iterator_dereference;
+	return it;
+}
+
 void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	strcpy(dq->type_name, "Deque_int");
 	dq->length = 0;
@@ -153,6 +188,8 @@ void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	dq->front = &Deque_int_front;
 	dq->pop_back = &Deque_int_pop_back;
 	dq->pop_front = &Deque_int_pop_front;
+	dq->begin = &Deque_int_begin;
+	dq->end = &Deque_int_end;
 }
 
 #endif
