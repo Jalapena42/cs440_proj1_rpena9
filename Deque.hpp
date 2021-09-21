@@ -12,6 +12,7 @@ typedef struct Deque_int_Iterator {
 	int idx;
 	int length;
 
+	bool (*compare)(const int &, const int &);
 	void (*inc)(Deque_int_Iterator*);
 	void (*dec)(Deque_int_Iterator*);
 	int (*deref)(Deque_int_Iterator*);
@@ -59,7 +60,7 @@ typedef struct Deque_int {
 	void (*pop_back)(Deque_int*);
 	void (*pop_front)(Deque_int*);
 
-	void (*sort)(Deque_int*, Deque_int_Iterator it1, Deque_int_Iterator it2);
+	void (*sort)(Deque_int*, Deque_int_Iterator, Deque_int_Iterator);
 } Deque_int;
 
 std::size_t Deque_int_size(Deque_int *dq){
@@ -174,6 +175,31 @@ int& Deque_int_at(Deque_int *dq, int idx){
 	return dq->arr[(idx + dq->frontIdx + dq->maxSize)%dq->maxSize];
 }
 
+int Deque_int_sort_compare(void* d, const void* a, const void* b){
+	Deque_int* dq = (Deque_int *) d;
+	int i1 = *(int*) a;
+	int i2 = *(int*) b;
+	printf("%d < %d: %d\n", i1, i2, dq->compare(i1, i2));
+	return dq->compare(i1, i2);
+}
+
+void Deque_int_sort(Deque_int *dq, Deque_int_Iterator it1, Deque_int_Iterator it2){
+	int num2sort = (it2.idx - it1.idx);
+	// int startIdx = it1.idx;
+	// int endIdx = it2.idx;
+	int* unsortedArr = (int*) malloc(sizeof(int) * num2sort);
+	for(int i = 0; i < num2sort; i++){
+		unsortedArr[i] = it1.deref(&it1);
+		printf("br: %d\n",unsortedArr[i]);
+		it1.inc(&it1);
+	}
+	qsort_r(unsortedArr, num2sort, sizeof(int), dq, Deque_int_sort_compare);
+	for(int i = 0; i < num2sort; i++){
+		printf("ar: %d\n",unsortedArr[i]);
+	}
+
+}
+
 Deque_int_Iterator Deque_int_begin(Deque_int* dq){
 	Deque_int_Iterator it;
 	it.arr = dq->arr;
@@ -183,6 +209,7 @@ Deque_int_Iterator Deque_int_begin(Deque_int* dq){
 	it.inc = &Deque_int_Iterator_increment;
 	it.dec = &Deque_int_Iterator_decrement;
 	it.deref = &Deque_int_Iterator_dereference;
+	it.compare = dq->compare;
 	return it;
 }
 
@@ -195,6 +222,7 @@ Deque_int_Iterator Deque_int_end(Deque_int* dq){
 	it.inc = &Deque_int_Iterator_increment;
 	it.dec = &Deque_int_Iterator_decrement;
 	it.deref = &Deque_int_Iterator_dereference;
+	it.compare = dq->compare;
 	return it;
 }
 
@@ -219,6 +247,7 @@ void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	dq->dtor = &Deque_int_dtor;
 	dq->clear = &Deque_int_clear;
 	dq->at = &Deque_int_at;
+	dq->sort = &Deque_int_sort;
 }
 
 #endif

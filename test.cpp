@@ -383,39 +383,39 @@ main() {
     }
 
     // Test random access performance
-    // {
-    //    size_t sum = 0;
-    //    int lo = 0, hi = 10000000;
-    //    Deque_int deq;
-    //    Deque_int_ctor(&deq, int_less);
+    {
+       size_t sum = 0;
+       int lo = 0, hi = 10000000;
+       Deque_int deq;
+       Deque_int_ctor(&deq, int_less);
 
-    //    for(int i = lo; i < hi; i++) {
-    //       deq.push_back(&deq, i);
-    //    }
+       for(int i = lo; i < hi; i++) {
+          deq.push_back(&deq, i);
+       }
 
-    //    for(int i = lo; i < hi; i++) {
-    //       sum += deq.at(&deq, i);
-    //    }
-    //    printf("Sum of all integers between %d and %d calculated using a deque is %lu.\n", lo, hi, sum);
-    //    deq.dtor(&deq);
-    // }
+       for(int i = lo; i < hi; i++) {
+          sum += deq.at(&deq, i);
+       }
+       printf("Sum of all integers between %d and %d calculated using a deque is %lu.\n", lo, hi, sum);
+       deq.dtor(&deq);
+    }
 
     // Test sort.
     // You must be able to work with the correct less-than function.
-    // {
-    //     Deque_int deq;
-    //     Deque_int_ctor(&deq, int_less);
-    //     std::default_random_engine e;
-    //     using rand = std::uniform_int_distribution<int>;
+    {
+        Deque_int deq;
+        Deque_int_ctor(&deq, int_less);
+        std::default_random_engine e;
+        using rand = std::uniform_int_distribution<int>;
 
-    //     for (int i = 0; i < 10000; i++) {
-    //         deq.push_back(&deq, rand(-1000000, 1000000)(e));
-    //     }
+        for (int i = 0; i < 100; i++) {
+            deq.push_back(&deq, rand(-100, 100)(e));
+        }
 
-    //     deq.sort(&deq, deq.begin(&deq), deq.end(&deq));
+        deq.sort(&deq, deq.begin(&deq), deq.end(&deq));
 
-    //     deq.dtor(&deq);
-    // }
+        deq.dtor(&deq);
+    }
 
 
     // Sorting Test 2
