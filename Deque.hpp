@@ -80,7 +80,14 @@ bool Deque_int_empty(Deque_int *dq){
 }
 
 bool Deque_int_equal(Deque_int dq1, Deque_int dq2){
-	assert(false);
+	if(dq1.length == dq2.length){
+		for(int i = 0; i < dq1.length; i++){
+			if(dq1.compare(dq1.arr[(dq1.frontIdx+i)%dq1.maxSize], dq2.arr[(dq2.frontIdx + i)%dq2.maxSize]) || dq1.compare(dq2.arr[(dq2.frontIdx + i)%dq2.maxSize], dq1.arr[(dq1.frontIdx+i)%dq1.maxSize])) return false;
+		}
+		return true;
+	} else {
+		return false;
+	}
 }
 
 void Deque_int_push_back(Deque_int *dq, int val) {
@@ -163,6 +170,10 @@ void Deque_int_pop_front(Deque_int *dq){
 	}
 }
 
+int& Deque_int_at(Deque_int *dq, int idx){
+	return dq->arr[(idx + dq->frontIdx + dq->maxSize)%dq->maxSize];
+}
+
 Deque_int_Iterator Deque_int_begin(Deque_int* dq){
 	Deque_int_Iterator it;
 	it.arr = dq->arr;
@@ -207,6 +218,7 @@ void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	dq->end = &Deque_int_end;
 	dq->dtor = &Deque_int_dtor;
 	dq->clear = &Deque_int_clear;
+	dq->at = &Deque_int_at;
 }
 
 #endif
