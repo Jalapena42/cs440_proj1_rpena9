@@ -17,19 +17,24 @@ bool Deque_int_Iterator_equal(Deque_int_Iterator it1, Deque_int_Iterator it2){
 }
 
 typedef struct Deque_int {
-	bool (*ctor)(int, int);
+	int length;
+	int frontIdx;
+	int backIdx;
+	int arrSize;
+	char type_name[sizeof("Deque_int")] = "Deque_int";
+
+	bool (*compare)(const int &, const int &);
 	bool (*dtor)(Deque_int*);
 	void (*clear)(Deque_int*);
 	
-	char* type_name;
-	int ** arr;	
+	int * arr;	
 	std::size_t (*size)(Deque_int*);
 	bool (*empty)(Deque_int*);
 
 	Deque_int_Iterator (*begin)(Deque_int*);
 	Deque_int_Iterator (*end)(Deque_int*);
 
-	int (*at)(Deque_int*, int);
+	int &(*at)(Deque_int*, int);
 	int (*front)(Deque_int*);
 	int (*back)(Deque_int*);
 	void (*push_back)(Deque_int*, int);
@@ -40,12 +45,27 @@ typedef struct Deque_int {
 	void (*sort)(Deque_int*, Deque_int_Iterator it1, Deque_int_Iterator it2);
 } Deque_int;
 
-void Deque_int_ctor(Deque_int *dq, bool (*ctor)(const int &, const int &)){
-	assert(false);
+std::size_t Deque_int_size(Deque_int *dq){
+	return (std::size_t) dq->length;
+}
+
+bool Deque_int_empty(Deque_int *dq){
+	return (dq->length == 0);
 }
 
 bool Deque_int_equal(Deque_int dq1, Deque_int dq2){
 	assert(false);
+}
+
+void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
+	dq->length = 0;
+	dq->frontIdx = -1;
+	dq->backIdx = -1;
+	dq->arrSize = 20;
+	dq->arr = (int*) calloc(dq->arrSize, sizeof(int));
+	dq->compare = cmp;
+	dq->size = &Deque_int_size;
+	dq->empty = &Deque_int_empty;
 }
 
 #endif
