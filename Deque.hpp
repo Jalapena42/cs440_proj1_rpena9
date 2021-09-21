@@ -103,6 +103,22 @@ void Deque_int_push_front(Deque_int *dq, int val) {
 	dq->length++;
 }
 
+int Deque_int_back(Deque_int *dq) {
+	if(dq->length != 0){
+		return dq->arr[dq->backIdx];
+	} else {
+		assert(false);
+	}
+}
+
+int Deque_int_front(Deque_int *dq) {
+	if(dq->length != 0){
+		return dq->arr[dq->frontIdx];
+	} else {
+		assert(false);
+	}
+}
+
 void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	strcpy(dq->type_name, "Deque_int");
 	dq->length = 0;
@@ -113,6 +129,10 @@ void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	dq->compare = cmp;
 	dq->size = &Deque_int_size;
 	dq->empty = &Deque_int_empty;
+	dq->push_front = &Deque_int_push_front;
+	dq->push_back = &Deque_int_push_back;
+	dq->back = &Deque_int_back;
+	dq->front = &Deque_int_front;
 }
 
 #endif
