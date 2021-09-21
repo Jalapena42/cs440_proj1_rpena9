@@ -8,7 +8,9 @@
 
 typedef struct Deque_int_Iterator {
 	int* arr;
+	int beginIdx;
 	int idx;
+	int length;
 
 	void (*inc)(Deque_int_Iterator*);
 	void (*dec)(Deque_int_Iterator*);
@@ -16,7 +18,7 @@ typedef struct Deque_int_Iterator {
 } Deque_int_Iterator;
 
 bool Deque_int_Iterator_equal(Deque_int_Iterator it1, Deque_int_Iterator it2){
-	return (it1.idx == it2.idx);
+	return (it1.arr == it2.arr && it1.idx == it2.idx);
 }
 
 void Deque_int_Iterator_increment(Deque_int_Iterator* it){
@@ -28,7 +30,7 @@ void Deque_int_Iterator_decrement(Deque_int_Iterator* it){
 }
 
 int Deque_int_Iterator_dereference(Deque_int_Iterator* it){
-	return it->arr[it->idx];
+	return it->arr[(it->idx + it->beginIdx)%it->length];
 }
 
 typedef struct Deque_int {
@@ -39,7 +41,7 @@ typedef struct Deque_int {
 	char type_name[strlen("Deque_int")+1];
 
 	bool (*compare)(const int &, const int &);
-	bool (*dtor)(Deque_int*);
+	void (*dtor)(Deque_int*);
 	void (*clear)(Deque_int*);
 	
 	int * arr;	
@@ -64,6 +66,15 @@ std::size_t Deque_int_size(Deque_int *dq){
 	return dq->length;
 }
 
+void Deque_int_dtor(Deque_int *dq){
+	if(dq->arr != NULL) free(dq->arr);
+}
+
+void Deque_int_clear(Deque_int *dq){
+	dq->length = 0;
+	dq->maxSize = 0;
+}
+
 bool Deque_int_empty(Deque_int *dq){
 	return (dq->length == 0);
 }
@@ -75,7 +86,7 @@ bool Deque_int_equal(Deque_int dq1, Deque_int dq2){
 void Deque_int_push_back(Deque_int *dq, int val) {
 	if(dq->length == dq->maxSize) {
 		int oldSize = dq->maxSize;
-		dq->maxSize = 2*dq->maxSize;
+		dq->maxSize = dq->maxSize == 0 ? 32:2*dq->maxSize;
 		int* newArr = (int*) malloc(sizeof(int) * dq->maxSize);
 		// Fill new array with values from old array, starting from frontIdx
 		for(int i = 0; i < dq->length; i++){
@@ -98,7 +109,7 @@ void Deque_int_push_back(Deque_int *dq, int val) {
 void Deque_int_push_front(Deque_int *dq, int val) {
 	if(dq->length == dq->maxSize) {
 		int oldSize = dq->maxSize;
-		dq->maxSize = 2*dq->maxSize;
+		dq->maxSize = dq->maxSize == 0 ? 32:2*dq->maxSize;
 		int* newArr = (int*) malloc(sizeof(int) * dq->maxSize);
 		// Fill new array with values from old array, starting from frontIdx, leaving space for front insert
 		for(int i = 0; i < dq->length; i++){
@@ -155,7 +166,9 @@ void Deque_int_pop_front(Deque_int *dq){
 Deque_int_Iterator Deque_int_begin(Deque_int* dq){
 	Deque_int_Iterator it;
 	it.arr = dq->arr;
-	it.idx = dq->frontIdx;
+	it.idx = 0;
+	it.beginIdx = dq->frontIdx;
+	it.length = dq->maxSize;
 	it.inc = &Deque_int_Iterator_increment;
 	it.dec = &Deque_int_Iterator_decrement;
 	it.deref = &Deque_int_Iterator_dereference;
@@ -165,7 +178,9 @@ Deque_int_Iterator Deque_int_begin(Deque_int* dq){
 Deque_int_Iterator Deque_int_end(Deque_int* dq){
 	Deque_int_Iterator it;
 	it.arr = dq->arr;
-	it.idx = dq->backIdx;
+	it.idx = dq->length;
+	it.beginIdx = dq->frontIdx;
+	it.length = dq->maxSize;
 	it.inc = &Deque_int_Iterator_increment;
 	it.dec = &Deque_int_Iterator_decrement;
 	it.deref = &Deque_int_Iterator_dereference;
@@ -177,7 +192,7 @@ void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	dq->length = 0;
 	dq->frontIdx = 0;
 	dq->backIdx = 0;
-	dq->maxSize = 32;
+	dq->maxSize = 0;
 	dq->arr = (int*) malloc(sizeof(int) * dq->maxSize);
 	dq->compare = cmp;
 	dq->size = &Deque_int_size;
@@ -190,6 +205,8 @@ void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	dq->pop_front = &Deque_int_pop_front;
 	dq->begin = &Deque_int_begin;
 	dq->end = &Deque_int_end;
+	dq->dtor = &Deque_int_dtor;
+	dq->clear = &Deque_int_clear;
 }
 
 #endif
