@@ -119,6 +119,24 @@ int Deque_int_front(Deque_int *dq) {
 	}
 }
 
+void Deque_int_pop_back(Deque_int *dq){
+	if(dq->length != 0){
+		dq->backIdx = ((dq->backIdx - 1) + dq->maxSize)%dq->maxSize;
+		dq->length--;
+	} else {
+		assert(false);
+	}
+}
+
+void Deque_int_pop_front(Deque_int *dq){
+	if(dq->length != 0){
+		dq->frontIdx = (dq->frontIdx + 1)%dq->maxSize;
+		dq->length--;
+	} else {
+		assert(false);
+	}
+}
+
 void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	strcpy(dq->type_name, "Deque_int");
 	dq->length = 0;
@@ -133,6 +151,8 @@ void Deque_int_ctor(Deque_int *dq, bool (*cmp)(const int &, const int &)){
 	dq->push_back = &Deque_int_push_back;
 	dq->back = &Deque_int_back;
 	dq->front = &Deque_int_front;
+	dq->pop_back = &Deque_int_pop_back;
+	dq->pop_front = &Deque_int_pop_front;
 }
 
 #endif

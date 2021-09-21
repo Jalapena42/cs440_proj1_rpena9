@@ -267,12 +267,12 @@ main() {
         assert(deq.front(&deq) == -1);
         assert(deq.back(&deq) == 3);
 
-        // deq.pop_front(&deq);
-        // deq.pop_back(&deq);
-        // assert(deq.front(&deq) == 0);
-        // assert(deq.back(&deq) == 2);
+        deq.pop_front(&deq);
+        deq.pop_back(&deq);
+        assert(deq.front(&deq) == 0);
+        assert(deq.back(&deq) == 2);
 
-        // assert(deq.size(&deq) == 3);
+        assert(deq.size(&deq) == 3);
 
         // for (Deque_int_Iterator it = deq.begin(&deq);
         //  !Deque_int_Iterator_equal(it, deq.end(&deq)); it.inc(&it)) {
